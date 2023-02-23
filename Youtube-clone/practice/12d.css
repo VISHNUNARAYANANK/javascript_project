@@ -1,0 +1,28 @@
+.full{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  height: 50px;
+  align-items: center;
+  border-width: 1px;
+  border-style: solid;
+  border-color: gray;
+  
+  
+}
+
+.first{
+  background-color: lightpink;
+  
+
+
+}
+
+.second{
+  background-color: lightpink;
+  
+}
+
+
+
+

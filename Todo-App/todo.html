@@ -1,0 +1,345 @@
+<Html>
+
+
+
+  
+  <head>
+      <title>My Todo App</title>
+    </head
+    
+    >
+  <body>
+      <input id="todo-title" type="text">
+      <input id="date-picker" type="date">
+      <button onclick="addTodo()">Add Todo</button>
+  
+      
+  
+  
+      <div id="todo-list"><div><input type="checkbox" data-todo-id="id1">Get groceries 2021-10-04<button data-todo-id="id1" style="margin-left: 12px;">Edit</button><button id="id1" style="margin-left: 12px;">Delete</button></div><div><input type="checkbox" data-todo-id="id2">Wash car 2021-02-03<button data-todo-id="id2" style="margin-left: 12px;">Edit</button><button id="id2" style="margin-left: 12px;">Delete</button></div><div><input type="checkbox" data-todo-id="id3">Make dinner 2021-03-04<button data-todo-id="id3" style="margin-left: 12px;">Edit</button><button id="id3" style="margin-left: 12px;">Delete</button></div></div>
+  
+      <script>
+  
+        // model section
+  
+        //if local storage has a todos array, then use it 
+        // other use the default array
+  
+        let todos;
+  
+        const savedTodos = JSON.parse(localStorage.getItem('todos'));
+  
+        if (Array.isArray(savedTodos)){
+  
+          todos = savedTodos;
+  
+        }
+        else{
+           todos = [{
+          title: 'Get groceries',
+          dueDate: '2021-10-04',
+          id: 'id1',
+          isEditing: undefined
+        }, {
+          title: 'Wash car',
+          dueDate: '2021-02-03',
+          id: 'id2',
+          isEditing : undefined
+        }, {
+          title: 'Make dinner',
+          dueDate: '2021-03-04',
+          id:'id3',
+          isEditing : undefined
+  
+        }];
+  
+        }
+  
+  
+        
+  
+        render();
+  
+        function updatingTodo(title,dueDate,idToUpdate){
+  
+          todos.forEach(function(todo){
+            if (todo.id === idToUpdate){
+              todo.title = title;
+              todo.dueDate = dueDate;
+              todo.isEditing = false;
+            }
+          })
+  
+          saveTodos();
+  
+  
+  
+          
+  
+        }
+  
+        //Creates a todo
+  
+        function createTodo(title,dueDate,isEditing){
+          const id = '' + new Date().getTime()
+          todos.push({
+            title: title,
+            dueDate: dueDate,
+            id:id,
+            isEditing : isEditing
+            
+          });
+  
+          saveTodos();
+  
+        }
+  
+  
+        //remove a todo
+  
+        function removeTodo(idToDelete){
+          todos = todos.filter(function(todo){
+  
+            if(todo.id === idToDelete){
+              return false
+            }
+            else{
+              return true
+            }
+          
+          });
+  
+          saveTodos();
+  
+        }
+  
+        function saveTodos(){
+  
+          localStorage.setItem('todos',JSON.stringify(todos))
+  
+  
+  
+        }
+  
+        // check a todo
+  
+        function checkTodo(idToChange,checkButton){
+          todos.forEach(function(todo){
+            if (todo.id === idToChange){
+              todo.isDone = checkButton.checked;
+            }
+          })
+        }
+  
+  
+        function editingTodo(idToEdit){
+  
+          todos.forEach(function(todo){
+            if(todo.id == idToEdit){
+              todo.isEditing = true
+            }
+          })
+  
+          
+        }
+  
+        
+  
+  
+        //controller section
+  
+  
+        function addTodo() {
+          const textbox = document.getElementById('todo-title');
+          const title = textbox.value;
+  
+          const datePicker = document.getElementById('date-picker');
+          const dueDate = datePicker.value;
+  
+          let isEditing = undefined;
+  
+          createTodo(title,dueDate,isEditing);
+  
+          
+   
+          render();
+        }
+        function updateTodo(event){
+          const textbox = document.getElementById('update-textBox');
+          const title = textbox.value;
+  
+          const datePicker = document.getElementById('update-datePicker');
+          const dueDate = datePicker.value;
+  
+          const idToUpdate = event.target.dataset.todoId;
+  
+          updatingTodo(title,dueDate,idToUpdate);
+  
+          //document.getElementById(idToUpdate)='';
+  
+          render();
+  
+  
+  
+        }
+  
+        function deleteTodo(event){
+          
+  
+          const deleteButton = event.target;
+  
+          const idToDelete = deleteButton.id;
+  
+          removeTodo(idToDelete);
+  
+          
+  
+          render();
+        }
+  
+        function changeTodo(event){
+          
+          const checkButton = event.target;
+          
+  
+          const idToChange = checkButton.dataset.todoId;
+          
+  
+          checkTodo(idToChange,checkButton);
+  
+          render();
+  
+          
+  
+          
+  
+  
+        }
+  
+        function editTodo(event){
+  
+          const editButton = event.target;
+  
+          const idToEdit = editButton.dataset.todoId;
+  
+          editingTodo(idToEdit);
+  
+          render();
+  
+  
+  
+        }
+   
+        //view section
+  
+        function render() { 
+          // reset our list
+          document.getElementById('todo-list').innerHTML = '';
+  
+          todos.forEach(function (todo) {
+  
+            if (todo.isEditing === true){
+  
+              const todo_id = todo.id;
+              const todoList = document.getElementById('todo-list');
+              const todo_div = document.createElement('div')
+              
+              
+  
+              const textbox = document.createElement('input');
+              textbox.type = 'text';
+              textbox.style = 'margin-right : 12px'
+              textbox.id  = 'update-textBox'
+              todo_div.appendChild(textbox)
+  
+              const datePicker = document.createElement('input');
+              datePicker.type = 'date';
+              datePicker.style = 'margin-right : 12px';
+              datePicker.id = 'update-datePicker'
+              todo_div.appendChild(datePicker) 
+  
+              const updateButton = document.createElement('button')
+              updateButton.innerText = 'Update'
+              updateButton.style = 'margin-right : 12px'
+              updateButton.dataset.todoId = todo.id;
+              todo_div.appendChild(updateButton)
+  
+              updateButton.onclick = updateTodo;
+  
+  
+              todoList.appendChild(todo_div)
+  
+              
+  
+             
+  
+              
+             
+              
+  
+              
+  
+  
+  
+  
+  
+  
+            }
+            else{
+              const element = document.createElement('div');
+              element.innerText = todo.title + ' ' + todo.dueDate;
+              
+  
+              const checkbox = document.createElement('input');
+              checkbox.type = 'checkbox'
+              checkbox.onchange = changeTodo;
+              checkbox.dataset.todoId = todo.id;
+              
+  
+              if (todo.isDone === true){
+                checkbox.checked = true;
+              }
+              else{
+                checkbox.checked  = false;
+              }
+              
+              element.prepend(checkbox)
+  
+              const editButton = document.createElement('button');
+              editButton.innerText = 'Edit';
+              editButton.style = 'margin-left: 12px';
+              editButton.onclick = editTodo;
+              editButton.dataset.todoId = todo.id;
+              element.appendChild(editButton);
+              
+              
+              
+  
+              const deleteButton = document.createElement('button');
+              deleteButton.innerText = 'Delete'
+              deleteButton.style = 'margin-left: 12px'
+              deleteButton.onclick = deleteTodo;
+              deleteButton.id = todo.id;
+              element.appendChild(deleteButton);
+  
+              const todoList = document.getElementById('todo-list');
+              todoList.appendChild(element);
+  
+          }
+            
+          });
+            }
+  
+            
+              
+            
+  
+            
+        
+      </script>
+    
+  </body>
+  
+
+</Html>  
+
